@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<title>Global Disaster Intelligence Platform</title>
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
+
+<style>
+
+html,body{
+
+margin:0;
+
+padding:0;
+
+height:100%;
+
+}
+
+#map{
+
+height:100vh;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+const map = L.map("map").setView(
+[
+20.5937,
+78.9629
+],
+5
+);
+
+L.tileLayer(
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+attribution:"OpenStreetMap"
+}
+).addTo(map);
+
+
+fetch("http://127.0.0.1:8000/disasters")
+
+.then(response=>response.json())
+
+.then(data=>{
+
+data.forEach(disaster=>{
+
+if(
+disaster.latitude!=null &&
+disaster.longitude!=null
+){
+
+L.marker(
+[
+disaster.latitude,
+disaster.longitude
+]
+)
+
+.addTo(map)
+
+.bindPopup(
+
+"<b>"+disaster.disaster_type+"</b><br>"+
+
+disaster.city+"<br>"+
+
+"Severity : "+disaster.severity+"<br>"+
+
+"Status : "+disaster.status
+
+);
+
+}
+
+});
+
+});
+
+</script>
+
+</body>
+
+</html>
