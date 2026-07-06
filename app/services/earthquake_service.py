@@ -3,46 +3,50 @@ from sqlalchemy.orm import Session
 from app.models.earthquake import Earthquake
 
 
-def save_earthquakes(
+def get_all_earthquakes(db: Session):
+
+    return (
+
+        db.query(Earthquake)
+
+        .order_by(Earthquake.id.desc())
+
+        .all()
+
+    )
+
+
+def get_latest_earthquake(db: Session):
+
+    return (
+
+        db.query(Earthquake)
+
+        .order_by(Earthquake.id.desc())
+
+        .first()
+
+    )
+
+
+def get_by_magnitude(
+
     db: Session,
-    earthquakes
+
+    minimum: float
+
 ):
 
-    for quake in earthquakes:
+    return (
 
-        exists = db.query(Earthquake).filter(
+        db.query(Earthquake)
 
-            Earthquake.usgs_id == quake["id"]
+        .filter(
 
-        ).first()
-
-        if exists:
-
-            continue
-
-        new = Earthquake(
-
-            usgs_id=quake["id"],
-
-            place=quake["place"],
-
-            magnitude=quake["magnitude"],
-
-            latitude=quake["latitude"],
-
-            longitude=quake["longitude"],
-
-            depth=quake["depth"],
-
-            time=str(quake["time"])
+            Earthquake.magnitude >= minimum
 
         )
 
-        db.add(new)
+        .all()
 
-    db.commit()
-
-
-def get_all_earthquakes(db: Session):
-
-    return db.query(Earthquake).all()
+    )
