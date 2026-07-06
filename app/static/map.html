@@ -1,104 +1,249 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
-<meta charset="utf-8">
+  <meta charset="UTF-8">
 
-<title>Global Disaster Intelligence Platform</title>
+  <title>Global Disaster Intelligence Platform</title>
 
-<link
-rel="stylesheet"
-href="https://unpkg.com/leaflet/dist/leaflet.css"
-/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<style>
+  <style>
+    html,
+    body {
 
-html,body{
+      height: 100%;
+      margin: 0;
+      padding: 0;
 
-margin:0;
+    }
 
-padding:0;
+    #map {
 
-height:100%;
+      height: 100%;
+      width: 100%;
 
-}
+    }
 
-#map{
+    .info {
 
-height:100vh;
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 1000;
 
-}
+      background: white;
 
-</style>
+      padding: 10px;
+
+      border-radius: 10px;
+
+      font-family: Arial;
+
+      box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+
+    }
+  </style>
 
 </head>
 
 <body>
 
-<div id="map"></div>
+  <div class="info">
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <h3>🌍 Global Disaster Intelligence Platform</h3>
 
-<script>
+    <p>Live Earthquakes + Disaster Data</p>
 
-const map = L.map("map").setView(
-[
-20.5937,
-78.9629
-],
-5
-);
+  </div>
 
-L.tileLayer(
-"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-{
-attribution:"OpenStreetMap"
-}
-).addTo(map);
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+
+    const map = L.map("map").setView(
+      [20.5937, 78.9629],
+      4
+    );
+
+    L.tileLayer(
+
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+      {
+
+        maxZoom: 19,
+
+        attribution: "OpenStreetMap"
+
+      }
+
+    ).addTo(map);
 
 
-fetch("http://127.0.0.1:8000/disasters")
 
-.then(response=>response.json())
 
-.then(data=>{
 
-data.forEach(disaster=>{
+    // -------------------------
+    // LIVE EARTHQUAKES
+    // -------------------------
 
-if(
-disaster.latitude!=null &&
-disaster.longitude!=null
-){
+    async function loadEarthquakes() {
 
-L.marker(
-[
-disaster.latitude,
-disaster.longitude
-]
-)
+      const response = await fetch("/earthquakes");
 
-.addTo(map)
+      const earthquakes = await response.json();
 
-.bindPopup(
+      earthquakes.forEach(quake => {
 
-"<b>"+disaster.disaster_type+"</b><br>"+
+        if (quake.latitude == null)
+          return;
 
-disaster.city+"<br>"+
+        L.circleMarker(
 
-"Severity : "+disaster.severity+"<br>"+
+          [
 
-"Status : "+disaster.status
+            quake.latitude,
 
-);
+            quake.longitude
 
-}
+          ],
 
-});
+          {
 
-});
+            radius:
 
-</script>
+              Math.max(
+                5,
+                quake.magnitude * 2
+              ),
+
+            color: "red",
+
+            fillColor: "red",
+
+            fillOpacity: .7
+
+          }
+
+        )
+
+          .addTo(map)
+
+          .bindPopup(
+
+            `
+<b>🌍 Earthquake</b>
+
+<hr>
+
+<b>Place :</b> ${quake.place}<br>
+
+<b>Magnitude :</b> ${quake.magnitude}<br>
+
+<b>Depth :</b> ${quake.depth} km
+
+`
+
+          );
+
+      });
+
+    }
+
+
+
+
+
+
+    // -------------------------
+    // DATABASE DISASTERS
+    // -------------------------
+
+    async function loadDisasters() {
+
+      const response = await fetch("/disasters");
+
+      const disasters = await response.json();
+
+      disasters.forEach(item => {
+
+        if (item.latitude == null)
+          return;
+
+        let color = "green";
+
+        if (item.severity == "High")
+          color = "red";
+
+        if (item.severity == "Medium")
+          color = "orange";
+
+        if (item.severity == "Extreme")
+          color = "purple";
+
+        L.circleMarker(
+
+          [
+
+            item.latitude,
+
+            item.longitude
+
+          ],
+
+          {
+
+            radius: 9,
+
+            color: color,
+
+            fillColor: color,
+
+            fillOpacity: .8
+
+          }
+
+        )
+
+          .addTo(map)
+
+          .bindPopup(
+
+            `
+
+<b>${item.disaster_type}</b>
+
+<hr>
+
+<b>Country :</b> ${item.country}<br>
+
+<b>State :</b> ${item.state}<br>
+
+<b>City :</b> ${item.city}<br>
+
+<b>Severity :</b> ${item.severity}<br>
+
+<b>Status :</b> ${item.status}
+
+`
+
+          );
+
+      });
+
+    }
+
+
+
+    loadEarthquakes();
+
+    loadDisasters();
+
+  </script>
 
 </body>
 

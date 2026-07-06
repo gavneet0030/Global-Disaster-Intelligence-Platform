@@ -28,6 +28,8 @@ from app.services.disaster_service import (
 from app.services.weather_service import get_weather
 from app.ml.predict import predict_risk
 
+from app.external_api.usgs_service import get_live_earthquakes
+
 router = APIRouter()
 
 
@@ -208,3 +210,11 @@ def predict(request: PredictionRequest):
     return {
         "risk": risk
     }
+
+
+# ---------------- LIVE EARTHQUAKES ---------------- #
+
+@router.get("/earthquakes")
+def earthquakes():
+
+    return get_live_earthquakes()
