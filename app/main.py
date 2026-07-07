@@ -1,32 +1,54 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routes import router
-from app.api.map_routes import router as map_router
-from app.api.earthquake_routes import router as earthquake_router
-
 from app.database.database import Base, engine
 
 import app.models.user
 import app.models.disaster
 import app.models.earthquake
 
+from app.api.user_routes import router as user_router
+from app.api.auth_routes import router as auth_router
+from app.api.disaster_routes import router as disaster_router
+from app.api.weather_routes import router as weather_router
+from app.api.prediction_routes import router as prediction_router
+from app.api.earthquake_routes import router as earthquake_router
+from app.api.map_routes import router as map_router
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Global Disaster Intelligence Platform",
-    description="AI Powered Disaster Intelligence System",
-    version="2.2.0"
+    version="3.0.0",
+    description="AI Powered Disaster Intelligence Platform"
 )
 
-app.include_router(router)
-
-app.include_router(map_router)
-
+app.include_router(user_router)
+app.include_router(auth_router)
+app.include_router(disaster_router)
+app.include_router(weather_router)
+app.include_router(prediction_router)
 app.include_router(earthquake_router)
+app.include_router(map_router)
 
 app.mount(
     "/static",
     StaticFiles(directory="app/static"),
     name="static"
 )
+
+
+@app.get("/")
+def home():
+
+    return {
+        "message": "Global Disaster Intelligence Platform API"
+    }
+
+
+@app.get("/health")
+def health():
+
+    return {
+        "status": "healthy"
+    }
