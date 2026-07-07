@@ -1,9 +1,13 @@
-from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
-class Settings(BaseSettings):
-    PROJECT_NAME: str = "Global Disaster Intelligence Platform"
-    VERSION: str = "1.0.0"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_KEY"
+)
 
+ALGORITHM = "HS256"
 
-settings = Settings()
+ACCESS_TOKEN_EXPIRE_MINUTES = 60

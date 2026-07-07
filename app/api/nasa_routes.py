@@ -10,12 +10,11 @@ from app.services.nasa_service import (
     get_events
 )
 
+from app.security.admin_dependency import admin_required
+
 router = APIRouter(
-
     prefix="/nasa",
-
     tags=["NASA Events"]
-
 )
 
 
@@ -27,7 +26,8 @@ def live_events():
 
 @router.post("/sync")
 def sync_events(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user=Depends(admin_required)
 ):
 
     events = get_nasa_events()
@@ -38,11 +38,8 @@ def sync_events(
     )
 
     return {
-
         "inserted": inserted,
-
         "total": len(events)
-
     }
 
 

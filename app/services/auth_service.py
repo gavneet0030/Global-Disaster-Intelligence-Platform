@@ -2,10 +2,9 @@ from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.schemas.auth import LoginRequest
-from app.core.security import (
-    verify_password,
-    create_access_token
-)
+
+from app.security.password_handler import verify_password
+from app.security.jwt_handler import create_access_token
 
 
 def login_user(
@@ -30,7 +29,8 @@ def login_user(
 
     token = create_access_token(
         {
-            "sub": user.email
+            "sub": user.email,
+            "is_admin": user.is_admin
         }
     )
 
