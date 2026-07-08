@@ -1,68 +1,145 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 
-from app.database.database import Base, engine
+from app.database.database import (
+    Base,
+    engine
+)
 
-import app.models.user
-import app.models.disaster
-import app.models.earthquake
-import app.models.nasa_event
+# ==========================
+# Import Models
+# ==========================
+
+from app.models.user import User
+from app.models.disaster import Disaster
+from app.models.earthquake import Earthquake
+from app.models.nasa_event import NASAEvent
+
+# ==========================
+# Routers
+# ==========================
 
 from app.api.user_routes import router as user_router
 from app.api.auth_routes import router as auth_router
-from app.api.disaster_routes import router as disaster_router
-from app.api.weather_routes import router as weather_router
-from app.api.prediction_routes import router as prediction_router
-from app.api.earthquake_routes import router as earthquake_router
 from app.api.nasa_routes import router as nasa_router
-from app.api.profile_routes import router as profile_router
-from app.api.map_routes import router as map_router
+from app.api.earthquake_routes import router as earthquake_router
+from app.api.agent_routes import router as agent_router
+
+# ==========================
+# Middleware
+# ==========================
 
 from app.middleware.logging_middleware import LoggingMiddleware
-from app.exceptions.handlers import register_exception_handlers
+
+# ==========================
+# Scheduler
+# ==========================
+
+from app.jobs.scheduler import start_scheduler
+
+
+# ==========================
+# Create Tables
+# ==========================
 
 Base.metadata.create_all(bind=engine)
 
+
+# ==========================
+# Lifespan
+# ==========================
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    print("=" * 60)
+    print("Global Disaster Intelligence Platform Started")
+    print("=" * 60)
+
+    start_scheduler()
+
+    yield
+
+    print("=" * 60)
+    print("Application Shutdown")
+    print("=" * 60)
+
+
+# ==========================
+# FastAPI
+# ==========================
+
 app = FastAPI(
+
     title="Global Disaster Intelligence Platform",
-    version="3.4.0",
-    description="AI Powered Disaster Intelligence Platform"
+
+    version="4.0.0",
+
+    lifespan=lifespan
+
 )
+
+
+# ==========================
+# Middleware
+# ==========================
 
 app.add_middleware(
+
     LoggingMiddleware
+
 )
 
-register_exception_handlers(app)
+
+# ==========================
+# Routers
+# ==========================
 
 app.include_router(user_router)
+
 app.include_router(auth_router)
-app.include_router(disaster_router)
-app.include_router(weather_router)
-app.include_router(prediction_router)
-app.include_router(earthquake_router)
+
 app.include_router(nasa_router)
-app.include_router(profile_router)
-app.include_router(map_router)
 
-app.mount(
-    "/static",
-    StaticFiles(directory="app/static"),
-    name="static"
-)
+app.include_router(earthquake_router)
 
+app.include_router(agent_router)
+
+
+# ==========================
+# Root
+# ==========================
 
 @app.get("/")
+
 def home():
 
     return {
-        "message": "Global Disaster Intelligence Platform API"
+
+        "message": "Global Disaster Intelligence Platform",
+
+        "version": "4.0.0",
+
+        "status": "Running"
+
     }
 
 
+# ==========================
+# Health Check
+# ==========================
+
 @app.get("/health")
+
 def health():
 
     return {
-        "status": "healthy"
+
+        "status": "healthy",
+
+        "database": "connected",
+
+        "scheduler": "running"
+
     }
