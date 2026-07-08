@@ -1,12 +1,13 @@
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
-SECRET_KEY = os.getenv(
-    "SECRET_KEY",
-    "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_KEY"
-)
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 ALGORITHM = "HS256"
 
