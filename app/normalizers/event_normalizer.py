@@ -1,48 +1,44 @@
-from datetime import datetime
-
-
 class EventNormalizer:
-
+    
     @staticmethod
     def normalize_nasa(event):
 
-        geometry = event["geometry"][-1]
+        geometry = event.get("geometry", [])
+
+        if not geometry:
+            return None
+
+        latest = geometry[-1]
+
+        coordinates = latest.get("coordinates", [])
+
+        if len(coordinates) < 2:
+            return None
 
         return {
-
-            "event_id": event["id"],
-
-            "title": event["title"],
-
-            "category": event["categories"][0]["title"],
-
-            "latitude": geometry["coordinates"][1],
-
-            "longitude": geometry["coordinates"][0],
-
-            "date": datetime.fromisoformat(
-                geometry["date"].replace("Z", "")
-            )
-
+            "title": event.get("title", "Unknown Event"),
+            "latitude": coordinates[1],
+            "longitude": coordinates[0],
+            "source": "NASA"
         }
 
     @staticmethod
-    def normalize_earthquake(feature):
+    def normalize_earthquake(event):
 
-        coordinates = feature["geometry"]["coordinates"]
+        geometry = event.get("geometry", {})
+        properties = event.get("properties", {})
+
+        coordinates = geometry.get("coordinates", [])
+
+        if len(coordinates) < 2:
+            return None
 
         return {
-
-            "event_id": feature["id"],
-
-            "title": feature["properties"]["title"],
-
-            "magnitude": feature["properties"]["mag"],
-
+            "title": properties.get("title", "Earthquake"),
             "latitude": coordinates[1],
-
             "longitude": coordinates[0],
-
-            "depth": coordinates[2]
-
+            "magnitude": properties.get("mag", 0.0),
+            "place": properties.get("place", "Unknown"),
+            "time": properties.get("time"),
+            "source": "USGS"
         }

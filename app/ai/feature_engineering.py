@@ -1,20 +1,33 @@
-import pandas as pd
+from app.ai.risk_score import RiskScore
 
 
 class FeatureEngineering:
 
     @staticmethod
-    def prepare(df: pd.DataFrame):
+    def transform(events):
 
-        features = df[
+        engineered = []
 
-            [
-                "latitude",
-                "longitude",
-                "magnitude",
-                "depth"
-            ]
+        for event in events:
 
-        ]
+            score = RiskScore.calculate(event)
 
-        return features
+            engineered.append({
+
+                "title": event["title"],
+
+                "latitude": event["latitude"],
+
+                "longitude": event["longitude"],
+
+                "source": event["source"],
+
+                "risk_score": score,
+
+                "severity": RiskScore.severity(score),
+
+                "confidence": RiskScore.confidence(score)
+
+            })
+
+        return engineered

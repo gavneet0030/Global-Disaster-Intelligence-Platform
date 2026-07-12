@@ -1,14 +1,7 @@
-from app.external_api.nasa_service import (
-    fetch_nasa_events
-)
+from app.external_api.nasa_service import fetch_nasa_events
+from app.external_api.usgs_service import fetch_earthquakes
 
-from app.external_api.earthquake_service import (
-    fetch_earthquakes
-)
-
-from app.normalizers.event_normalizer import (
-    EventNormalizer
-)
+from app.normalizers.event_normalizer import EventNormalizer
 
 
 class DisasterIngestion:
@@ -16,25 +9,28 @@ class DisasterIngestion:
     @staticmethod
     def fetch_all():
 
+        # Fetch raw data
         nasa = fetch_nasa_events()
-
         earthquakes = fetch_earthquakes()
 
-        nasa_events = [
+        # Normalized data
+        nasa_events = []
 
-            EventNormalizer.normalize_nasa(x)
+        for event in nasa:
 
-            for x in nasa
+            normalized = EventNormalizer.normalize_nasa(event)
 
-        ]
+            if normalized is not None:
+                nasa_events.append(normalized)
 
-        earthquake_events = [
+        earthquake_events = []
 
-            EventNormalizer.normalize_earthquake(x)
+        for event in earthquakes:
 
-            for x in earthquakes
+            normalized = EventNormalizer.normalize_earthquake(event)
 
-        ]
+            if normalized is not None:
+                earthquake_events.append(normalized)
 
         return {
 

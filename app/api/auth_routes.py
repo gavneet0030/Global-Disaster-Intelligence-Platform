@@ -8,7 +8,7 @@ from app.schemas.auth import (
     TokenResponse
 )
 
-from app.services.auth_service import login_user
+from app.services.auth_service import AuthService
 
 router = APIRouter(
     prefix="/auth",
@@ -25,7 +25,7 @@ def login(
     db: Session = Depends(get_db)
 ):
 
-    token = login_user(
+    token = AuthService.login(
         db,
         login
     )
@@ -33,11 +33,8 @@ def login(
     if token is None:
 
         raise HTTPException(
-
             status_code=401,
-
             detail="Invalid email or password"
-
         )
 
     return token
