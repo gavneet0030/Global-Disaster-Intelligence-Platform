@@ -1,34 +1,31 @@
 from fastapi import APIRouter
 
-from app.schemas.prediction import (
-    PredictionRequest,
-    PredictionResponse
-)
-
-from app.ml.predict import predict_risk
+from app.ai.predict_model import DisasterPredictor
+from app.schemas.prediction_request import PredictionRequest
 
 router = APIRouter(
     prefix="/prediction",
-    tags=["AI Prediction"]
+    tags=["Prediction"]
 )
 
+predictor = DisasterPredictor()
 
-@router.post(
-    "/risk",
-    response_model=PredictionResponse
-)
-def predict(
-    request: PredictionRequest
-):
 
-    risk = predict_risk(
-        request.temperature,
-        request.humidity,
-        request.wind_speed,
-        request.pressure,
-        request.rainfall
+@router.post("/risk")
+def predict_risk(request: PredictionRequest):
+
+    return predictor.predict(
+
+        temperature=request.temperature,
+
+        humidity=request.humidity,
+
+        wind_speed=request.wind_speed,
+
+        pressure=request.pressure,
+
+        rainfall=request.rainfall,
+
+        disaster_type=request.disaster_type
+
     )
-
-    return {
-        "risk": risk
-    }

@@ -1,13 +1,59 @@
-import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 
-class DataPreprocessing:
+class DataPreprocessor:
 
     @staticmethod
-    def clean(df):
+    def preprocess(df):
 
-        df = df.drop_duplicates()
+        disaster_encoder = LabelEncoder()
 
-        df = df.dropna()
+        risk_encoder = LabelEncoder()
 
-        return df
+        df["disaster_type"] = (
+
+            disaster_encoder.fit_transform(
+
+                df["disaster_type"]
+
+            )
+
+        )
+
+        y = risk_encoder.fit_transform(
+
+            df["risk"]
+
+        )
+
+        X = df[
+
+            [
+
+                "temperature",
+
+                "humidity",
+
+                "wind_speed",
+
+                "pressure",
+
+                "rainfall",
+
+                "disaster_type",
+
+            ]
+
+        ]
+
+        return (
+
+            X,
+
+            y,
+
+            disaster_encoder,
+
+            risk_encoder,
+
+        )

@@ -17,6 +17,7 @@ from app.schemas.earthquake_filter import MagnitudeFilter
 
 from app.security.admin_dependency import admin_required
 
+
 router = APIRouter(
     prefix="/earthquakes",
     tags=["Earthquakes"]

@@ -12,6 +12,7 @@ from app.services.nasa_service import (
 
 from app.security.admin_dependency import admin_required
 
+
 router = APIRouter(
     prefix="/nasa",
     tags=["NASA Events"]
@@ -38,8 +39,11 @@ def sync_events(
     )
 
     return {
+
         "inserted": inserted,
+
         "total": len(events)
+
     }
 
 

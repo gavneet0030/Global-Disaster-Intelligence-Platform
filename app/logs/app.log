@@ -66,3 +66,18 @@ Traceback (most recent call last):
                ~~~~~^^^^^^^^^^^^
 KeyError: 'geometry'
 2026-07-12 19:46:33,454 | WARNING | Run time of job "IngestionService.fetch (trigger: interval[0:15:00], next run at: 2026-07-12 19:59:00 IST)" was missed by 0:02:33.300002
+2026-07-13 07:37:08,927 | INFO | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-07-13 07:37:08,954 | INFO | Added job "IngestionService.fetch" to job store "default"
+2026-07-13 07:37:08,955 | INFO | Scheduler started
+2026-07-13 07:37:37,588 | INFO | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-07-13 07:37:37,603 | INFO | Added job "IngestionService.fetch" to job store "default"
+2026-07-13 07:37:37,604 | INFO | Scheduler started
+2026-07-13 07:37:57,154 | INFO | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-07-13 07:37:57,182 | INFO | Added job "IngestionService.fetch" to job store "default"
+2026-07-13 07:37:57,192 | INFO | Scheduler started
+2026-07-13 07:38:34,221 | INFO | GET / 200 0.0288s
+2026-07-13 07:38:34,535 | INFO | GET /favicon.ico 404 0.0021s
+2026-07-13 07:52:57,171 | INFO | Running job "IngestionService.fetch (trigger: interval[0:15:00], next run at: 2026-07-13 07:52:57 IST)" (scheduled at 2026-07-13 07:52:57.153716+05:30)
+2026-07-13 07:53:06,314 | INFO | Job "IngestionService.fetch (trigger: interval[0:15:00], next run at: 2026-07-13 08:07:57 IST)" executed successfully
+2026-07-13 07:58:53,890 | INFO | GET /docs 200 0.0013s
+2026-07-13 07:58:55,247 | INFO | GET /openapi.json 200 0.0993s
